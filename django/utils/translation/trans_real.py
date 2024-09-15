@@ -16,7 +16,7 @@ from django.core.exceptions import AppRegistryNotReady
 from django.core.signals import setting_changed
 from django.dispatch import receiver
 from django.utils.regex_helper import _lazy_re_compile
-from django.utils.safestring import SafeData, mark_safe
+from django.utils.safestring import SafeData, SafeString
 
 from . import to_language, to_locale
 
@@ -386,7 +386,7 @@ def gettext(message):
         result = type(message)("")
 
     if isinstance(message, SafeData):
-        return mark_safe(result)
+        return SafeString(result)
 
     return result
 
@@ -398,7 +398,7 @@ def pgettext(context, message):
         # Translation not found
         result = message
     elif isinstance(message, SafeData):
-        result = mark_safe(result)
+        result = SafeString(result)
     return result
 
 
