@@ -1,7 +1,7 @@
 from django.template.defaultfilters import urlize
 from django.test import SimpleTestCase
 from django.utils.functional import lazy
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeString
 
 from ..utils import setup
 
@@ -19,7 +19,7 @@ class UrlizeTests(SimpleTestCase):
             "urlize01",
             {
                 "a": "http://example.com/?x=&y=",
-                "b": mark_safe("http://example.com?x=&amp;y=&lt;2&gt;"),
+                "b": SafeString("http://example.com?x=&amp;y=&lt;2&gt;"),
             },
         )
         self.assertEqual(
@@ -36,7 +36,7 @@ class UrlizeTests(SimpleTestCase):
             "urlize02",
             {
                 "a": "http://example.com/?x=&y=",
-                "b": mark_safe("http://example.com?x=&amp;y="),
+                "b": SafeString("http://example.com?x=&amp;y="),
             },
         )
         self.assertEqual(
@@ -49,12 +49,16 @@ class UrlizeTests(SimpleTestCase):
 
     @setup({"urlize03": "{% autoescape off %}{{ a|urlize }}{% endautoescape %}"})
     def test_urlize03(self):
-        output = self.engine.render_to_string("urlize03", {"a": mark_safe("a &amp; b")})
+        output = self.engine.render_to_string(
+            "urlize03", {"a": SafeString("a &amp; b")}
+        )
         self.assertEqual(output, "a &amp; b")
 
     @setup({"urlize04": "{{ a|urlize }}"})
     def test_urlize04(self):
-        output = self.engine.render_to_string("urlize04", {"a": mark_safe("a &amp; b")})
+        output = self.engine.render_to_string(
+            "urlize04", {"a": SafeString("a &amp; b")}
+        )
         self.assertEqual(output, "a &amp; b")
 
     # This will lead to a nonsense result, but at least it won't be
