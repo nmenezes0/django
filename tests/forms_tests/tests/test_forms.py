@@ -44,7 +44,7 @@ from django.template import Context, Template
 from django.test import SimpleTestCase
 from django.test.utils import override_settings
 from django.utils.datastructures import MultiValueDict
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeString
 
 from . import jinja2_tests
 
@@ -1389,7 +1389,7 @@ class FormsTestCase(SimpleTestCase):
         # Validation errors are HTML-escaped when output as HTML.
         class EscapingForm(Form):
             special_name = CharField(label="<em>Special</em> Field")
-            special_safe_name = CharField(label=mark_safe("<em>Special</em> Field"))
+            special_safe_name = CharField(label=SafeString("<em>Special</em> Field"))
 
             def clean_special_name(self):
                 raise ValidationError(
@@ -1398,7 +1398,7 @@ class FormsTestCase(SimpleTestCase):
 
             def clean_special_safe_name(self):
                 raise ValidationError(
-                    mark_safe(
+                    SafeString(
                         "'<b>%s</b>' is a safe string"
                         % self.cleaned_data["special_safe_name"]
                     )
@@ -4086,7 +4086,11 @@ Options: <select multiple name="options" aria-invalid="true" required>
             (("custom",), {}, '<%(tag)s for="id_field">custom:</%(tag)s>'),
             # the overridden label is escaped
             (("custom&",), {}, '<%(tag)s for="id_field">custom&amp;:</%(tag)s>'),
-            ((mark_safe("custom&"),), {}, '<%(tag)s for="id_field">custom&:</%(tag)s>'),
+            (
+                (SafeString("custom&"),),
+                {},
+                '<%(tag)s for="id_field">custom&:</%(tag)s>',
+            ),
             # Passing attrs to add extra attributes on the <label>
             (
                 (),
