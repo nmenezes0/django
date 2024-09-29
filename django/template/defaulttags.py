@@ -13,7 +13,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.utils.html import conditional_escape, escape, format_html
 from django.utils.lorem_ipsum import paragraphs, words
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeString
 
 from .base import (
     BLOCK_TAG_END,
@@ -55,7 +55,7 @@ class AutoEscapeControlNode(Node):
         output = self.nodelist.render(context)
         context.autoescape = old_setting
         if self.setting:
-            return mark_safe(output)
+            return SafeString(output)
         else:
             return output
 
@@ -247,7 +247,7 @@ class ForNode(Node):
                     # the context ending up in an inconsistent state when other
                     # tags (e.g., include and with) push data to context.
                     context.pop()
-        return mark_safe("".join(nodelist))
+        return SafeString("".join(nodelist))
 
 
 class IfChangedNode(Node):
