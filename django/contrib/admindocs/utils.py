@@ -7,7 +7,7 @@ from inspect import cleandoc
 
 from django.urls import reverse
 from django.utils.regex_helper import _lazy_re_compile
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeString
 
 try:
     import docutils.core
@@ -85,7 +85,7 @@ def parse_rst(text, default_reference_context, thing_being_parsed=None):
         writer_name="html",
         settings_overrides=overrides,
     )
-    return mark_safe(parts["fragment"])
+    return SafeString(parts["fragment"])
 
 
 #
